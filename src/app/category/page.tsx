@@ -41,7 +41,6 @@ const Page = () => {
 
   const [allCategory, setAllCategory] = useState<Category[]>([])
 
-
   const getAllCategory = async () => {
     try {
 

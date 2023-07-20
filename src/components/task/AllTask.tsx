@@ -51,21 +51,24 @@ const AllTask: React.FC<Props> = ({ allCategory, setNewTask, updateCompleted, ta
 
     return (
         <div className='flex overflow-x-hidden gap-5 md:gap-10 flex-col justify-center px-5 sm:px-10 md:px-16 lg:px-56 xl:px-96 py-36 w-screen'>
-            <div className='w-full flex items-center justify-center gap-8'>
-                <div className='relative w-2/5'>
+            <div className='w-full flex-col flex items-center justify-center gap-8 xl:flex-row'>
+                <div className='relative w-full xl:w-2/5'>
                     <FontAwesomeIcon icon={faSearch} className='absolute top-4 text-gray-600 left-3 text-lg' />
                     <input type="text" value={searchQuery} onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search Task' className='w-full py-2.5 px-10 rounded-md border-2 outline-none' />
                 </div>
-                <button className='bg-blue-600 text-white px-5 py-2.5 rounded-md' onClick={() => setNewTask(true)}>Create Task</button>
-                <select className='border-b border-blue-600 py-2.5 px-3 outline-none bg-slate-50' value={categoryID} onChange={(e: any) => setCategeoryID(e.target.value)}>
-                    <option value="">All Category</option>
-                    {allCategory.map(item => (  
-                        <option value={item.id} key={item.id}>{item.name}</option>
-                    ))}
-                </select>
-                <div className='flex items-center gap-3'>
-                    <label htmlFor="completed" className='cursor-pointer'>Completed</label>
-                    <input id='completed' type="checkbox" className='w-4 h-4 cursor-pointer' checked={completed ? true : false} onChange={(e) => setCompleted(prevData => !prevData)} />
+                <div className='flex items-center gap-5 w-full xl:w-1/2'>
+                    <button className='bg-blue-600 text-white px-5 py-2.5 rounded-md' onClick={() => setNewTask(true)}>Create Task</button>
+                    <select className='border-b border-blue-600 py-2.5 px-3 outline-none bg-slate-50' value={categoryID} onChange={(e: any) => setCategeoryID(e.target.value)}>
+                        <option value="">All Category</option>
+                        {allCategory.map(item => (
+                            <option value={item.id} key={item.id}>{item.name}</option>
+                        ))}
+                    </select>
+                    <div className='flex items-center gap-3'>
+                        <label htmlFor="completed" className='cursor-pointer'>Completed</label>
+                        <input id='completed' type="checkbox" className='w-4 h-4 cursor-pointer' checked={completed ? true : false} onChange={(e) => setCompleted(prevData => !prevData)} />
+                    </div>
+
                 </div>
             </div>
             <div className='gap-5 md:gap-10 flex flex-wrap justify-center w-full'>

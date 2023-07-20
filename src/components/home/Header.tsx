@@ -1,5 +1,5 @@
 'use client'
-import { faBoxesStacked, faHouse, faListCheck, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBoxesStacked, faHouse, faListCheck, faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Link from 'next/link'
@@ -13,6 +13,8 @@ const Header: React.FC = ({ }) => {
     const [user, setUser] = useState({ name: '', token: '' })
 
     const [open, setIsOpen] = useState(false)
+
+    const [menu, setMenu] = useState(false)
 
     const logout = async (e: any) => {
 
@@ -52,7 +54,8 @@ const Header: React.FC = ({ }) => {
     return (
         <header className='fixed bg-white z-20 top-0 left-0 w-screen h-20 shadow-lg px-5 sm:px-10 md:px-16 lg:px-24 xl:px-36 flex items-center'>
             <h1 className='text-blue-600 w-80 text-2xl md:text-3xl tracking-tight font-black'>TASK MASTER</h1>
-            <ul className='w-full flex items-center justify-end gap-7'>
+            <FontAwesomeIcon icon={menu ? faXmark : faBars} className='text-2xl cursor-pointer absolute z-10 right-5 top-5 md:hidden' onClick={() => setMenu(prevData => !prevData)} />
+            <ul className={`w-full justify-end md:flex lg:items-center md:gap-8 ${menu ? 'gap-5 shadow-2xl flex flex-col fixed top-0 left-0 w-screen bg-white p-10 text-gray-600' : 'hidden'}`}>
                 <Link href={'/task'} className='flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-600'>
                     <div>Task</div>
                     <FontAwesomeIcon icon={faListCheck} />
@@ -72,7 +75,6 @@ const Header: React.FC = ({ }) => {
                         </li>
                     </ul>
                 </li>
-
             </ul>
         </header>
 

@@ -43,7 +43,7 @@ const Page = () => {
     const [allTask, setAllTask] = useState<Task[]>([])
 
     const [allCategory, setAllCategory] = useState<Category[]>([])
-
+    
     const [taskForm, setTaskForm] = useState({
         name: '',
         description: '',
