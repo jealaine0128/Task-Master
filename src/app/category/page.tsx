@@ -44,11 +44,17 @@ const Page = () => {
   const getAllCategory = async () => {
     try {
 
-      const { data } = await axios.get(`${API_URL}/api/v1/categories`, {
+      const { data, status } = await axios.get(`${API_URL}/api/v1/categories`, {
         headers: {
           Authorization: user.token
         }
       })
+
+      if (status === 401) {
+        localStorage.clear()
+        alert('session expired please sign in.')
+        router.push('/')
+      }
 
       setAllCategory(data)
 
@@ -65,13 +71,23 @@ const Page = () => {
 
     try {
 
-      const { data } = await axios.post(`${API_URL}/api/v1/categories`, {
+      if(!categoryForm) return alert('Category name is required')
+      if(categoryForm.length < 3) return alert('Category name is too short')
+      
+
+      const { data, status } = await axios.post(`${API_URL}/api/v1/categories`, {
         name: categoryForm
       }, {
         headers: {
           Authorization: user.token
         }
       })
+
+      if (status === 401) {
+        localStorage.clear()
+        alert('session expired please sign in.')
+        router.push('/')
+      }
 
       await getAllCategory()
 
@@ -91,13 +107,21 @@ const Page = () => {
 
     try {
 
-      const { data } = await axios.patch(`${API_URL}/api/v1/categories/${updateCategoryForm.id}`, {
+      if(!updateCategoryForm.name) return alert('Category name is required')
+
+      const { data, status } = await axios.patch(`${API_URL}/api/v1/categories/${updateCategoryForm.id}`, {
         name: updateCategoryForm.name
       }, {
         headers: {
           Authorization: user.token
         }
       })
+
+      if (status === 401) {
+        localStorage.clear()
+        alert('session expired please sign in.')
+        router.push('/')
+      }
 
       await getAllCategory()
 
@@ -117,12 +141,17 @@ const Page = () => {
 
     try {
 
-      const { data } = await axios.delete(`${API_URL}/api/v1/categories/${ID}`, {
+      const { data, status } = await axios.delete(`${API_URL}/api/v1/categories/${ID}`, {
         headers: {
           Authorization: user.token
         }
       })
 
+      if (status === 401) {
+        localStorage.clear()
+        alert('session expired please sign in.')
+        router.push('/')
+      }
       await getAllCategory()
 
     } catch (error) {

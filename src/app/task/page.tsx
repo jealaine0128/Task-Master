@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-import NewCategoryModal from '@/components/category/NewCategoryModal'
 import Header from '@/components/home/Header'
 import AllTask from '@/components/task/AllTask'
 import TaskModal from '@/components/task/NewTaskModal'
@@ -17,7 +16,7 @@ interface User {
     token: string
 }
 
-interface Task {
+export interface Task {
     id: string
     name: string
     description: string
@@ -42,8 +41,15 @@ const Page = () => {
 
     const [allTask, setAllTask] = useState<Task[]>([])
 
+    const currentDate = new Date().toISOString().substring(0, 10);
+
+    const todayTask = allTask.filter(task => {
+        const taskCreatedDateString = task.created_at.substring(0, 10);
+        return taskCreatedDateString === currentDate;
+    });
+
     const [allCategory, setAllCategory] = useState<Category[]>([])
-    
+
     const [taskForm, setTaskForm] = useState({
         name: '',
         description: '',
@@ -78,11 +84,19 @@ const Page = () => {
 
         try {
 
-            const { data } = await axios.get(`${API_URL}/api/v1/tasks`, {
+            const { data, status } = await axios.get(`${API_URL}/api/v1/tasks`, {
                 headers: {
                     Authorization: user.token
                 }
             })
+
+            console.log(status);
+
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
 
             setAllTask(data)
 
@@ -98,11 +112,17 @@ const Page = () => {
     const getAllCategory = async () => {
         try {
 
-            const { data } = await axios.get(`${API_URL}/api/v1/categories`, {
+            const { data, status } = await axios.get(`${API_URL}/api/v1/categories`, {
                 headers: {
                     Authorization: user.token
                 }
             })
+
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
 
             setAllCategory(data)
 
@@ -147,13 +167,23 @@ const Page = () => {
 
         const { name, description, category_id } = taskForm
 
+        if (!name) return alert('Title is required')
+        if (name.length < 3) return alert('Title is too short')
+        if (!description) return alert('Add description to your task')
+        if (!category_id) return alert('Choose category')
         try {
 
-            const { data } = await axios.post(`${API_URL}/api/v1/tasks`, { name, description, category_id }, {
+            const { data, status } = await axios.post(`${API_URL}/api/v1/tasks`, { name, description, category_id }, {
                 headers: {
                     Authorization: user.token
                 }
             })
+
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
 
             await getAllTask()
 
@@ -175,11 +205,17 @@ const Page = () => {
 
         try {
 
-            const { data } = await axios.delete(`${API_URL}/api/v1/tasks/${ID}`, {
+            const { data, status } = await axios.delete(`${API_URL}/api/v1/tasks/${ID}`, {
                 headers: {
                     Authorization: user.token
                 }
             })
+
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
 
             await getAllTask()
 
@@ -234,9 +270,15 @@ const Page = () => {
         e.preventDefault()
 
         const { id, completed, name, description, category_id } = updateTaskForm
+
+        if (!name) return alert('Title is required')
+        if (name.length < 3) return alert('Title is too short')
+        if (!description) return alert('Add description to your task')
+        if (!category_id) return alert('Choose category')
+
         try {
 
-            const { data } = await axios.patch(`${API_URL}/api/v1/tasks/${id}`, {
+            const { data, status } = await axios.patch(`${API_URL}/api/v1/tasks/${id}`, {
                 completed, name, description, category_id
             }, {
                 headers: {
@@ -244,6 +286,11 @@ const Page = () => {
                 }
             })
 
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
             await getAllTask()
 
             setUpdateTaskForm({
@@ -272,13 +319,19 @@ const Page = () => {
 
         try {
 
-            const { data } = await axios.patch(`${API_URL}/api/v1/tasks/${task.id}`, {
+            const { data, status } = await axios.patch(`${API_URL}/api/v1/tasks/${task.id}`, {
                 completed: !task.completed
             }, {
                 headers: {
                     Authorization: user.token
                 }
             })
+
+            if (status === 401) {
+                localStorage.clear()
+                alert('session expired please sign in.')
+                router.push('/')
+            }
 
             await getAllTask()
 
@@ -293,7 +346,7 @@ const Page = () => {
 
             <Header />
 
-            <AllTask allCategory={allCategory} updateCompleted={updateCompleted} setNewTask={setNewTask} openUpdateTask={openUpdateTask} task={filterSearch} deleteTask={deleteTask} setViewTask={setViewTask} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <AllTask allCategory={allCategory} todayTask={todayTask} updateCompleted={updateCompleted} setNewTask={setNewTask} openUpdateTask={openUpdateTask} task={filterSearch} deleteTask={deleteTask} setViewTask={setViewTask} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
             {newTask && <TaskModal setTaskForm={setTaskForm} handleTaskForm={handleTaskForm} allCategory={allCategory} setNewTask={setNewTask} taskForm={taskForm} createTask={createTask} />}
 

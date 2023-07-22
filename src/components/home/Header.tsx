@@ -1,5 +1,5 @@
 'use client'
-import { faBars, faBoxesStacked, faHouse, faListCheck, faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBoxesStacked, faHome, faHouse, faListCheck, faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Link from 'next/link'
@@ -30,7 +30,7 @@ const Header: React.FC = ({ }) => {
 
             localStorage.clear()
 
-            router.push('/login')
+            router.push('/')
 
         } catch (error) {
 
@@ -56,16 +56,24 @@ const Header: React.FC = ({ }) => {
             <h1 className='text-blue-600 w-80 text-2xl md:text-3xl tracking-tight font-black'>TASK MASTER</h1>
             <FontAwesomeIcon icon={menu ? faXmark : faBars} className='text-2xl cursor-pointer absolute z-10 right-5 top-5 md:hidden' onClick={() => setMenu(prevData => !prevData)} />
             <ul className={`w-full justify-end md:flex lg:items-center md:gap-8 ${menu ? 'gap-5 shadow-2xl flex flex-col fixed top-0 left-0 w-screen bg-white p-10 text-gray-600' : 'hidden'}`}>
+                
+                <Link href={'/'} className='flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-600'>
+                    <div>Home</div>
+                    <FontAwesomeIcon icon={faHome} />
+                </Link>
+
                 <Link href={'/task'} className='flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-600'>
                     <div>Task</div>
                     <FontAwesomeIcon icon={faListCheck} />
                 </Link>
+
                 <Link href={'/category'} className='flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-600'>
                     <div>Category</div>
                     <FontAwesomeIcon icon={faBoxesStacked} />
                 </Link>
+
                 <li className='relative'>
-                    <button id="dropdownDividerButton" onClick={() => setIsOpen(prevData => !prevData)} data-dropdown-toggle="dropdownDivider" className=" outline-none rounded-lg px-5 py-2.5 flex items-center">{user.name}<svg className="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <button onClick={() => setIsOpen(prevData => !prevData)} className=" outline-none rounded-lg px-5 py-2.5 flex items-center">{user.name}<svg className="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                     </svg></button>
                     <ul className={`py-2 absolute bg-white shadow ${!open && 'hidden'}`}>
