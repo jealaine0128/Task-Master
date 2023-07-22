@@ -30,8 +30,8 @@ const LandingHeader = () => {
 
             localStorage.clear()
 
-            router.push('/')
-
+            window.location.reload()
+            
         } catch (error) {
 
             console.log(error);

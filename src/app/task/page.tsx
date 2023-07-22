@@ -2,13 +2,13 @@
 'use client'
 import Header from '@/components/home/Header'
 import AllTask from '@/components/task/AllTask'
-import TaskModal from '@/components/task/NewTaskModal'
 import UpdateTaskModal from '@/components/task/UpdateTaskModal'
 import ViewTaskModal from '@/components/task/ViewTaskModal'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Category } from '../category/page'
+import NewTaskModal from '@/components/task/NewTaskModal'
 
 
 interface User {
@@ -18,6 +18,7 @@ interface User {
 
 export interface Task {
     id: string
+    deadline: string
     name: string
     description: string
     created_at: string
@@ -44,7 +45,7 @@ const Page = () => {
     const currentDate = new Date().toISOString().substring(0, 10);
 
     const todayTask = allTask.filter(task => {
-        const taskCreatedDateString = task.created_at.substring(0, 10);
+        const taskCreatedDateString = task.deadline.substring(0, 10);
         return taskCreatedDateString === currentDate;
     });
 
@@ -52,6 +53,7 @@ const Page = () => {
 
     const [taskForm, setTaskForm] = useState({
         name: '',
+        deadline: '',
         description: '',
         category_id: ''
     })
@@ -59,6 +61,7 @@ const Page = () => {
     const [updateTaskForm, setUpdateTaskForm] = useState<Task>({
         id: '',
         name: '',
+        deadline: '',
         description: '',
         category_id: '',
         created_at: '',
@@ -69,6 +72,7 @@ const Page = () => {
 
     const [viewTask, setViewTask] = useState<Task>({
         id: '',
+        deadline: '',
         name: '',
         description: '',
         created_at: '',
@@ -90,8 +94,6 @@ const Page = () => {
                 }
             })
 
-            console.log(status);
-
             if (status === 401) {
                 localStorage.clear()
                 alert('session expired please sign in.')
@@ -103,7 +105,9 @@ const Page = () => {
         } catch (error) {
 
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
 
@@ -128,7 +132,9 @@ const Page = () => {
 
         } catch (error) {
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
     }
@@ -158,14 +164,14 @@ const Page = () => {
 
     }, [user]);
 
-
+    const filterTodaySearch = todayTask.filter(item => item.name.toUpperCase().includes(searchQuery.toUpperCase()))
     const filterSearch = allTask.filter(item => item.name.toUpperCase().includes(searchQuery.toUpperCase()))
 
     const createTask = async (e: any) => {
 
         e.preventDefault()
 
-        const { name, description, category_id } = taskForm
+        const { name, description, category_id, deadline } = taskForm
 
         if (!name) return alert('Title is required')
         if (name.length < 3) return alert('Title is too short')
@@ -173,30 +179,27 @@ const Page = () => {
         if (!category_id) return alert('Choose category')
         try {
 
-            const { data, status } = await axios.post(`${API_URL}/api/v1/tasks`, { name, description, category_id }, {
+            const { data, status } = await axios.post(`${API_URL}/api/v1/tasks`, { name, description, category_id, deadline }, {
                 headers: {
                     Authorization: user.token
                 }
             })
-
-            if (status === 401) {
-                localStorage.clear()
-                alert('session expired please sign in.')
-                router.push('/')
-            }
 
             await getAllTask()
 
             setNewTask(false)
             setTaskForm({
                 name: '',
+                deadline: '',
                 description: '',
                 category_id: ''
             })
 
         } catch (error) {
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
     }
@@ -221,7 +224,9 @@ const Page = () => {
 
         } catch (error) {
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
     }
@@ -256,6 +261,7 @@ const Page = () => {
         setUpdateTaskForm({
             id: '',
             name: '',
+            deadline: '',
             description: '',
             category_id: '',
             created_at: '',
@@ -269,7 +275,7 @@ const Page = () => {
 
         e.preventDefault()
 
-        const { id, completed, name, description, category_id } = updateTaskForm
+        const { id, completed, name, description, category_id, deadline } = updateTaskForm
 
         if (!name) return alert('Title is required')
         if (name.length < 3) return alert('Title is too short')
@@ -279,7 +285,7 @@ const Page = () => {
         try {
 
             const { data, status } = await axios.patch(`${API_URL}/api/v1/tasks/${id}`, {
-                completed, name, description, category_id
+                completed, name, description, category_id, deadline
             }, {
                 headers: {
                     Authorization: user.token
@@ -296,6 +302,7 @@ const Page = () => {
             setUpdateTaskForm({
                 id: '',
                 name: '',
+                deadline: '',
                 description: '',
                 category_id: '',
                 created_at: '',
@@ -308,7 +315,9 @@ const Page = () => {
 
         } catch (error) {
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
     }
@@ -337,7 +346,9 @@ const Page = () => {
 
         } catch (error) {
 
-            console.log(error);
+            alert('sessoin expired please sign in.')
+            localStorage.clear()
+            router.push('/login')
 
         }
     }
@@ -346,9 +357,9 @@ const Page = () => {
 
             <Header />
 
-            <AllTask allCategory={allCategory} todayTask={todayTask} updateCompleted={updateCompleted} setNewTask={setNewTask} openUpdateTask={openUpdateTask} task={filterSearch} deleteTask={deleteTask} setViewTask={setViewTask} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <AllTask allCategory={allCategory} todayTask={filterTodaySearch} updateCompleted={updateCompleted} setNewTask={setNewTask} openUpdateTask={openUpdateTask} task={filterSearch} deleteTask={deleteTask} setViewTask={setViewTask} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-            {newTask && <TaskModal setTaskForm={setTaskForm} handleTaskForm={handleTaskForm} allCategory={allCategory} setNewTask={setNewTask} taskForm={taskForm} createTask={createTask} />}
+            {newTask && <NewTaskModal setTaskForm={setTaskForm} handleTaskForm={handleTaskForm} allCategory={allCategory} setNewTask={setNewTask} taskForm={taskForm} createTask={createTask} />}
 
             {viewTask.name && <ViewTaskModal task={viewTask} allCategory={allCategory} setViewTask={setViewTask} />}
 

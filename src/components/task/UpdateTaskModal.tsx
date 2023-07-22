@@ -11,6 +11,7 @@ interface Props {
         description: string
         created_at: string
         updated_at: string
+        deadline: string
         completed: boolean
         category_id: string
         user_id: string
@@ -46,6 +47,10 @@ const UpdateTaskModal: React.FC<Props> = ({ closeUpdateTask, updateTask, taskFor
                     <div className='flex items-center gap-3'>
                         <label htmlFor="completed">Completed</label>
                         <input type="checkbox" id='completed' name='completed' className='w-4 h-4' checked={taskForm.completed ? true : false} onChange={handleUpdateTaskForm} />
+                    </div>
+                    <div className='flex items-center gap-3 w-full'>
+                        <label htmlFor="deadline" className='font-medium cursor-pointer'>Deadline:</label>
+                        <input type="date" className='border-blue-600 py-2 px-3 outline-none border-b' id='deadline' name='deadline' onChange={handleUpdateTaskForm} value={taskForm.deadline} />
                     </div>
                 </div>
                 <div className='flex items-center gap-5'>

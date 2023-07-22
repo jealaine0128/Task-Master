@@ -8,6 +8,7 @@ import React, { useState } from 'react'
 
 interface Task {
     id: string
+    deadline: string
     name: string
     description: string
     created_at: string
@@ -51,9 +52,32 @@ const AllTask: React.FC<Props> = ({ allCategory, setNewTask, updateCompleted, ta
 
     const filterByCategory = categoryID ? task.filter(item => item.category_id == categoryID) : task
 
-    const filterTodayTask = completed ? todayTask.filter(item => item.completed === true) : todayTask
+    const filterTodayByCategoryTask = categoryID ? todayTask.filter(item => item.category_id === categoryID) : todayTask
 
-    const filteredTask = completed ? filterByCategory.filter(item => item.completed === true) : filterByCategory
+    const filterTodayCompletedTask = completed ? filterTodayByCategoryTask.filter(item => item.completed === true) : filterTodayByCategoryTask
+
+    const filteredCompletedTask = completed ? filterByCategory.filter(item => item.completed === true) : filterByCategory
+
+    function timeAgo(dateString: string) {
+        const createdDate: any = new Date(dateString);
+        const currentDate: any = new Date();
+
+        const timeDifferenceInSeconds = Math.floor((currentDate - createdDate) / 1000);
+
+        if (timeDifferenceInSeconds < 60) {
+            return `${timeDifferenceInSeconds} second${timeDifferenceInSeconds !== 1 ? 's' : ''} ago`;
+        } else if (timeDifferenceInSeconds < 3600) {
+            const minutes = Math.floor(timeDifferenceInSeconds / 60);
+            return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+        } else if (timeDifferenceInSeconds < 86400) {
+            const hours = Math.floor(timeDifferenceInSeconds / 3600);
+            return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+        } else {
+            const days = Math.floor(timeDifferenceInSeconds / 86400);
+            return `${days} day${days !== 1 ? 's' : ''} ago`;
+        }
+    }
+
 
     return (
         <div className='flex overflow-x-hidden gap-5 md:gap-10 flex-col justify-center px-5 sm:px-10 md:px-16 lg:px-56 xl:px-96 py-36 w-screen'>
@@ -83,12 +107,15 @@ const AllTask: React.FC<Props> = ({ allCategory, setNewTask, updateCompleted, ta
             {today && <div className='w-full flex flex-col gap-10'>
                 <h1 className='font-light lg:font-extralight text-2xl md:text-3xl xl:text-4xl lg:px-16 xl:px-28'>Let's Get It Done, Today!</h1>
                 <div className='gap-5 md:gap-10 flex flex-wrap justify-center w-full'>
-                    {filterTodayTask && filterTodayTask.map(item => (
+                    {filterTodayCompletedTask && filterTodayCompletedTask.map(item => (
                         <div key={item.id} className='bg-white shadow-xl border-t flex flex-col gap-3 rounded-xl p-5 w-full border-blue-600 sm:w-2/5 relative'>
                             <h1 className='text-lg font-medium text-gray-700'>{item.name}</h1>
                             <p>{item.description}</p>
                             <div className='mt-auto pt-3 flex items-center justify-between'>
-                                <small className='text-gray-500'>{item.created_at}</small>
+                                <div className='flex flex-col gap-1'>
+                                    <small className='text-gray-500'><span className='font-bold'>Deadline: </span>{item.deadline && item.deadline}</small>
+                                    <small className='text-gray-500'><span className='font-bold'>Created: </span>{timeAgo(item.created_at)}</small>
+                                </div>
                                 <div className='flex items-center gap-5'>
                                     <span className={`w-4 h-4 rounded-full cursor-pointer ${item.completed ? 'bg-green-500' : 'bg-red-600'}`} onClick={(e: any) => updateCompleted(e, item)}></span>
                                     <FontAwesomeIcon icon={faEllipsis} className='text-3xl cursor-pointer hover:text-blue-600' onClick={() => {
@@ -110,12 +137,15 @@ const AllTask: React.FC<Props> = ({ allCategory, setNewTask, updateCompleted, ta
             {!today && <div className='w-full flex flex-col gap-10'>
                 <h1 className='font-light lg:font-extralight text-2xl md:text-3xl xl:text-4xl lg:px-16 xl:px-28'>All Task Overview</h1>
                 <div className='gap-5 md:gap-10 flex flex-wrap justify-center w-full'>
-                    {filteredTask && filteredTask.map(item => (
+                    {filteredCompletedTask && filteredCompletedTask.map(item => (
                         <div key={item.id} className='bg-white shadow-xl border-t flex flex-col gap-3 rounded-xl p-5 w-full border-blue-600 sm:w-2/5 relative'>
                             <h1 className='text-lg font-medium text-gray-700'>{item.name}</h1>
                             <p>{item.description}</p>
                             <div className='mt-auto pt-3 flex items-center justify-between'>
-                                <small className='text-gray-500'>{item.created_at}</small>
+                                <div className='flex flex-col gap-1'>
+                                    <small className='text-gray-500'><span className='font-bold'>Deadline: </span>{item.deadline && item.deadline}</small>
+                                    <small className='text-gray-500'><span className='font-bold'>Created: </span> {timeAgo(item.created_at)}</small>
+                                </div>
                                 <div className='flex items-center gap-5'>
                                     <span className={`w-4 h-4 rounded-full cursor-pointer ${item.completed ? 'bg-green-500' : 'bg-red-600'}`} onClick={(e: any) => updateCompleted(e, item)}></span>
                                     <FontAwesomeIcon icon={faEllipsis} className='text-3xl cursor-pointer hover:text-blue-600' onClick={() => {

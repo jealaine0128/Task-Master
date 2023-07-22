@@ -10,6 +10,7 @@ interface Props {
   taskForm: {
     name: string;
     description: string;
+    deadline: string
     category_id: string;
   }
   allCategory: {
@@ -22,13 +23,14 @@ interface Props {
   handleTaskForm: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   setTaskForm: React.Dispatch<React.SetStateAction<{
     name: string;
+    deadline: string
     description: string;
     category_id: string;
   }>>
 
 }
 
-const TaskModal: React.FC<Props> = ({ setNewTask, createTask, taskForm, setTaskForm, allCategory, handleTaskForm }) => {
+const NewTaskModal: React.FC<Props> = ({ setNewTask, createTask, taskForm, setTaskForm, allCategory, handleTaskForm }) => {
 
   useEffect(() => {
     if (allCategory.length > 0) {
@@ -37,7 +39,7 @@ const TaskModal: React.FC<Props> = ({ setNewTask, createTask, taskForm, setTaskF
         category_id: allCategory[0].id,
       }));
     }
-  }, [allCategory]);
+  }, [allCategory]);  
 
   return (
     <div className='fixed top-0 z-30 px-5 py-20 md:py-36 left-0 w-screen h-screen grid place-items-center bg-opacity-50 bg-black'>
@@ -54,6 +56,10 @@ const TaskModal: React.FC<Props> = ({ setNewTask, createTask, taskForm, setTaskF
             </select>
           </div>
           <textarea placeholder='Task description...' name='description' onChange={handleTaskForm} value={taskForm.description} className='h-full border border-gray-300 p-3 resize-none outline-none' />
+          <div className='flex items-center gap-3 w-full'>
+                <label htmlFor="deadline" className='font-medium cursor-pointer'>Deadline:</label>
+                <input type="date"  className='border-blue-600 py-2 px-3 outline-none border-b' id='deadline' name='deadline' onChange={handleTaskForm} value={taskForm.deadline}/>
+          </div>
         </div>
         <div className='flex items-center gap-5'>
           <button className='bg-white border border-blue-600 text-blue-600 rounded-md py-2.5 text-lg w-1/2 self-end' type='button' onClick={() => setNewTask(false)}>Cancel</button>
@@ -64,4 +70,4 @@ const TaskModal: React.FC<Props> = ({ setNewTask, createTask, taskForm, setTaskF
   )
 }
 
-export default TaskModal
+export default NewTaskModal

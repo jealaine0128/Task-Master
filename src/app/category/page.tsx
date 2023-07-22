@@ -3,10 +3,12 @@
 import AllCategory from '@/components/category/AllCategory'
 import NewCategoryModal from '@/components/category/NewCategoryModal'
 import UpdateCategoryModal from '@/components/category/UpdateCategoryModal'
+import ViewCategoryModal from '@/components/category/ViewCategoryModal'
 import Header from '@/components/home/Header'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { Task } from '../task/page'
 
 
 export interface Category {
@@ -29,6 +31,14 @@ const Page = () => {
 
   const [categoryForm, setCategoryForm] = useState('')
 
+  const [viewCategory, setViewCategory] = useState({
+    id: '',
+    name: '',
+    created_at: '',
+    updated_at: '',
+    user_id: ''
+  })
+
   const [updateCategoryForm, setUpdateCategoryForm] = useState<Category>({
     id: '',
     name: '',
@@ -38,6 +48,8 @@ const Page = () => {
   })
 
   const [isUpdating, setIsUpdating] = useState(false)
+
+  const [allTask, setAllTask] = useState<Task[]>([])
 
   const [allCategory, setAllCategory] = useState<Category[]>([])
 
@@ -60,9 +72,40 @@ const Page = () => {
 
     } catch (error) {
 
-      console.log(error);
+      alert('sessoin expired please sign in.')
+      localStorage.clear()
+      router.push('/login')
 
     }
+  }
+
+  const getAllTask = async () => {
+
+    try {
+
+      const { data, status } = await axios.get(`${API_URL}/api/v1/tasks`, {
+        headers: {
+          Authorization: user.token
+        }
+      })
+
+      if (status === 401) {
+        localStorage.clear()
+        alert('session expired please sign in.')
+        router.push('/')
+      }
+
+      setAllTask(data)
+
+    } catch (error) {
+
+
+      alert('sessoin expired please sign in.')
+      localStorage.clear()
+      router.push('/login')
+
+    }
+
   }
 
   const createCategory = async (e: any) => {
@@ -71,9 +114,9 @@ const Page = () => {
 
     try {
 
-      if(!categoryForm) return alert('Category name is required')
-      if(categoryForm.length < 3) return alert('Category name is too short')
-      
+      if (!categoryForm) return alert('Category name is required')
+      if (categoryForm.length < 3) return alert('Category name is too short')
+
 
       const { data, status } = await axios.post(`${API_URL}/api/v1/categories`, {
         name: categoryForm
@@ -96,7 +139,9 @@ const Page = () => {
 
     } catch (error) {
 
-      console.log(error);
+      alert('sessoin expired please sign in.')
+      localStorage.clear()
+      router.push('/login')
 
     }
   }
@@ -107,7 +152,7 @@ const Page = () => {
 
     try {
 
-      if(!updateCategoryForm.name) return alert('Category name is required')
+      if (!updateCategoryForm.name) return alert('Category name is required')
 
       const { data, status } = await axios.patch(`${API_URL}/api/v1/categories/${updateCategoryForm.id}`, {
         name: updateCategoryForm.name
@@ -130,7 +175,9 @@ const Page = () => {
 
     } catch (error) {
 
-      console.log(error);
+      alert('sessoin expired please sign in.')
+      localStorage.clear()
+      router.push('/login')
 
     }
   }
@@ -156,7 +203,9 @@ const Page = () => {
 
     } catch (error) {
 
-      console.log(error);
+      alert('sessoin expired please sign in.')
+      localStorage.clear()
+      router.push('/login')
 
     }
   }
@@ -196,6 +245,8 @@ const Page = () => {
 
       getAllCategory();
 
+      getAllTask()
+
     }
 
   }, [user]);
@@ -203,12 +254,16 @@ const Page = () => {
 
   return (
     <div className='overflow-x-hidden'>
+
       <Header />
-      <AllCategory deleteCategory={deleteCategory} openUpdateCategory={openUpdateCategory} allCategory={allCategory} setNewCategory={setNewCategory} />
+
+      <AllCategory setViewCategory={setViewCategory} deleteCategory={deleteCategory} openUpdateCategory={openUpdateCategory} allCategory={allCategory} setNewCategory={setNewCategory} />
 
       {newCategory && <NewCategoryModal setNewCategory={setNewCategory} createCategory={createCategory} setCategoryForm={setCategoryForm} />}
 
       {isUpdating && <UpdateCategoryModal updateCategoryForm={updateCategoryForm} setIsUpdating={setIsUpdating} handleUpdateCategoryForm={handleUpdateCategoryForm} updateCategory={updateCategory} />}
+
+      {viewCategory.name && <ViewCategoryModal allTask={allTask} category={viewCategory} setViewCategory={setViewCategory} />}
 
     </div>
   )
