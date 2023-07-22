@@ -105,9 +105,7 @@ const Page = () => {
         } catch (error) {
 
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
 
@@ -132,9 +130,7 @@ const Page = () => {
 
         } catch (error) {
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
     }
@@ -197,9 +193,7 @@ const Page = () => {
 
         } catch (error) {
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
     }
@@ -224,9 +218,7 @@ const Page = () => {
 
         } catch (error) {
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
     }
@@ -315,9 +307,7 @@ const Page = () => {
 
         } catch (error) {
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
     }
@@ -346,9 +336,7 @@ const Page = () => {
 
         } catch (error) {
 
-            alert('sessoin expired please sign in.')
-            localStorage.clear()
-            router.push('/login')
+            console.log(error)
 
         }
     }
